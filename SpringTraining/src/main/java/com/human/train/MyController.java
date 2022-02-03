@@ -1,7 +1,11 @@
 package com.human.train;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +15,88 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class MyController {
 
+	@Autowired
+	private SqlSession sqlSession;
+	
+	@RequestMapping("/ad_room")
+	public String room(HttpServletRequest hsr,Model m) {
+		iEmp jc=sqlSession.getMapper(iEmp.class);
+		ArrayList<Room> Room=jc.getRoom();
+		System.out.println("size ["+Room.size()+"]");
+		m.addAttribute("Room",Room);
+		
+		return "addRoom";
+		}
+	@RequestMapping("/art")public String ART() {return "addRoomtype";}
+	@RequestMapping("/menuadd")public String doMenuadd() {return "addMenu";}
+	
+	@RequestMapping("/room_add")
+	public String room_add(HttpServletRequest hsr,Model m) {
+		
+		return "addRoom";	
+	}
+	
+	@RequestMapping("/addRoomtype")
+	public String addRoomtype(HttpServletRequest hsr) {
+		String name=hsr.getParameter("typename");
+		int typecode=Integer.parseInt(hsr.getParameter("typecode"));
+		iEmp emp=sqlSession.getMapper(iEmp.class);
+		emp.addType(typecode, name);
+		return "addRoomtype";		
+	}
+	
+	@RequestMapping("/addRoom")
+	public String addRoom(HttpServletRequest hsr) {
+		String name=hsr.getParameter("roomname");
+		int type=Integer.parseInt(hsr.getParameter("roomtype"));
+		int howmany=Integer.parseInt(hsr.getParameter("howmany"));
+		int howmuch=Integer.parseInt(hsr.getParameter("howmuch"));
+		
+		iEmp emp=sqlSession.getMapper(iEmp.class);
+		emp.addRoom(name, type, howmany, howmuch);
+		
+		return "redirect:/ad_room";
+	}
+	
+	
+	
+	@RequestMapping("/addmenu")
+	public String doAddMenu(HttpServletRequest hsr) {
+		String mname=hsr.getParameter("menu_name");
+		int price=Integer.parseInt(hsr.getParameter("price"));
+		
+		iEmp emp=sqlSession.getMapper(iEmp.class);
+		emp.addMenu(mname, price);
+		return "addMenu";
+	}
+	
+	@RequestMapping("/jc")
+	public String joincon(Model m) {
+		iEmp jc=sqlSession.getMapper(iEmp.class);
+		ArrayList<joincon> aljc=jc.getjoinCon();
+		System.out.println("size ["+aljc.size()+"]");
+		m.addAttribute("aljc",aljc);
+		return "joincon";
+	}
+	
+	@RequestMapping("/cnt")
+	public String docountryList(Model m) {
+		iEmp cnt=sqlSession.getMapper(iEmp.class);
+		ArrayList<countries> alcnt=cnt.getCountries();
+		System.out.println("size ["+alcnt.size()+"]");
+		m.addAttribute("alcnt",alcnt);
+		return "country";
+	}
+	
+	@RequestMapping("/emp")
+	public String doEmpList(Model m) {
+		iEmp emp=sqlSession.getMapper(iEmp.class);
+		ArrayList<Employee> alEmp=emp.getEmpList();
+		System.out.println("size ["+alEmp.size()+"]");
+		m.addAttribute("alEmp",alEmp);
+		return "emp";
+	}
+	
 	@RequestMapping(value="/look",method=RequestMethod.GET)
 	public String look(Model model,HttpServletRequest hsr) {
 		
@@ -55,7 +141,6 @@ public class MyController {
 		try {
 		String x1=hsr.getParameter("x1");
 		String x2=hsr.getParameter("x2");
-		String error="";
 		
 		int xx1=Integer.parseInt(x1);
 		int xx2=Integer.parseInt(x2);
@@ -88,12 +173,12 @@ public class MyController {
 			}else if(op.equals("/")) {
 				model.addAttribute("result",(xx1/xx2));return "divide";
 			}else {
-				model.addAttribute("result","¿¬»êÀÚ ºÒ¸í");
+				model.addAttribute("result","ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½");
 				return "error";
 			}
 			
 			}catch (Exception e) {
-				model.addAttribute("result","¼ýÀÚ È®ÀÎ");
+				model.addAttribute("result","ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½");
 				return "error";
 			}
 			
