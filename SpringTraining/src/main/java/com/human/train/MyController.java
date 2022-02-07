@@ -18,23 +18,41 @@ public class MyController {
 	@Autowired
 	private SqlSession sqlSession;
 	
+	@RequestMapping("/deleteRoom")
+	public String doDeleteRoom(HttpServletRequest hsr) {
+		int roomcode=Integer.parseInt(hsr.getParameter("roomcode"));
+		
+		iEmp emp=sqlSession.getMapper(iEmp.class);
+		emp.deleteRoom(roomcode);
+		return "redirect:/ad_room";
+		}
+	
+	@RequestMapping("/deleteMenu")
+	public String doDeleteMenu(HttpServletRequest hsr) {
+		int code=Integer.parseInt(hsr.getParameter("code"));
+		
+		iEmp emp=sqlSession.getMapper(iEmp.class);
+		emp.deleteMenu(code);
+		return "redirect:/menuadd";
+		}
+	
 	@RequestMapping("/ad_room")
 	public String room(HttpServletRequest hsr,Model m) {
 		iEmp jc=sqlSession.getMapper(iEmp.class);
 		ArrayList<Room> Room=jc.getRoom();
-		System.out.println("size ["+Room.size()+"]");
 		m.addAttribute("Room",Room);
-		
+		ArrayList<Roomtype> typelist=jc.getRoomType();
+		System.out.println("typesize : "+typelist.size());
+		m.addAttribute("roomtype",typelist);
 		return "addRoom";
 		}
 	@RequestMapping("/art")public String ART() {return "addRoomtype";}
-	@RequestMapping("/menuadd")public String doMenuadd() {return "addMenu";}
-	
-	@RequestMapping("/room_add")
-	public String room_add(HttpServletRequest hsr,Model m) {
-		
-		return "addRoom";	
-	}
+	@RequestMapping("/menuadd")public String doMenuadd(HttpServletRequest hsr,Model m) {
+		iEmp jc=sqlSession.getMapper(iEmp.class);
+		ArrayList<menu> menu=jc.getmenu();
+		m.addAttribute("menu",menu);
+		return "addMenu";
+		}
 	
 	@RequestMapping("/addRoomtype")
 	public String addRoomtype(HttpServletRequest hsr) {
@@ -47,14 +65,19 @@ public class MyController {
 	
 	@RequestMapping("/addRoom")
 	public String addRoom(HttpServletRequest hsr) {
+		String StrCode=hsr.getParameter("roomcode");
 		String name=hsr.getParameter("roomname");
 		int type=Integer.parseInt(hsr.getParameter("roomtype"));
 		int howmany=Integer.parseInt(hsr.getParameter("howmany"));
 		int howmuch=Integer.parseInt(hsr.getParameter("howmuch"));
 		
 		iEmp emp=sqlSession.getMapper(iEmp.class);
+		if(StrCode.equals("")) { //insert
 		emp.addRoom(name, type, howmany, howmuch);
-		
+		}else {
+			int code=Integer.parseInt(StrCode);
+			emp.updateRoom(code,name,type,howmany,howmuch);
+		}
 		return "redirect:/ad_room";
 	}
 	
@@ -62,12 +85,18 @@ public class MyController {
 	
 	@RequestMapping("/addmenu")
 	public String doAddMenu(HttpServletRequest hsr) {
+		String strCode=hsr.getParameter("code");
 		String mname=hsr.getParameter("menu_name");
 		int price=Integer.parseInt(hsr.getParameter("price"));
 		
 		iEmp emp=sqlSession.getMapper(iEmp.class);
+		if(strCode.equals("")) { //insert
 		emp.addMenu(mname, price);
-		return "addMenu";
+		}else { //update
+			int code=Integer.parseInt(strCode);
+			emp.updateMenu(code, mname, price);
+		}
+		return "redirect:/menuadd";
 	}
 	
 	@RequestMapping("/jc")

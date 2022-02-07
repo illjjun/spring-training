@@ -36,4 +36,25 @@
 	from room a,roomtype b 
 	where a.type=b.typecode
 </select>
+
+<select id="getmenu" resultType="com.human.train.menu">
+	select name,price,code 
+	from menu
+</select>
+<delete id="deleteMenu">
+	delete from menu where code=#{param1}
+</delete>
+
+<delete id="deleteRoom">
+	delete from room where roomcode=#{param1}
+</delete>
+<select id="getRoomType" resultType="com.human.train.Roomtype">
+	select typecode,name from roomtype order by typecode
+</select>
+<update id="updateMenu">
+	update menu set name=#{param2},price=#{param3} where code=#{param1}
+</update>
+<update id="updateRoom">
+	update room set name=#{param2}, type=#{param3}, howmany=#{param4}, howmuch=#{param5} where roomcode=#{param1}
+</update>
 </mapper>
