@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public interface iEmp {
 	ArrayList<Employee> getEmpList();
+	ArrayList<emplist> emplist();
+	ArrayList<emplist> getEmpList1(int keyword);
 	ArrayList<countries> getCountries();
 	ArrayList<joincon> getjoinCon();
 	void addMenu(String menu_name,int price);
@@ -16,4 +18,5 @@ public interface iEmp {
 	ArrayList<Roomtype> getRoomType();
 	void updateMenu(int code,String name, int price);
 	void updateRoom(int roomcode,String name,int type,int howmany,int howmuch);
+	
 }

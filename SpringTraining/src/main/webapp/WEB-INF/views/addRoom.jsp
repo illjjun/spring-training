@@ -13,10 +13,10 @@
 <table>
 <tr>
 	<td>
-		<select id=selRoom style='width:200px;' size=10>
-		<c:forEach items="${Room}" var="rm"> 
-		<option value=${rm.roomcode}>${rm.name},${rm.type},${rm.howmany},${rm.howmuch}</option>
-		</c:forEach>
+		<select id=selRoom style='width:300px;' size=10>
+<%-- 		<c:forEach items="${Room}" var="rm">  --%>
+<%-- 		<option value=${rm.roomcode}>${rm.name},${rm.type},${rm.howmany},${rm.howmuch}</option> --%>
+<%-- 		</c:forEach> --%>
 		</select>
 	</td>
 	<td>
@@ -30,10 +30,10 @@
 			<tr><td align=right>타입:</td>
 				<td>
 				<select id=roomtype name=roomtype>
-				<option>-</option>
-				<c:forEach items='${roomtype}' var='roomtype'>
-					<option value="${roomtype.typecode}">${roomtype.name}</option>
-				</c:forEach>
+<!-- 				<option>-</option> -->
+<%-- 				<c:forEach items='${roomtype}' var='roomtype'> --%>
+<%-- 					<option value="${roomtype.typecode}">${roomtype.name}</option> --%>
+<%-- 				</c:forEach> --%>
 				</select>
 				</td>
 			</tr>
@@ -57,6 +57,34 @@
 
 <script>
 $(document)
+.ready(function(){
+	$.ajax({url:"/train/roomlist",
+		data:{},
+		datatype:'json',
+		method:"GET",
+		success:function(txt){
+			for(i=0;i<txt.length;i++){
+				let str='<option value='+txt[i]['roomcode']+'>'+txt[i]['name']+','+txt[i]['type']+','+txt[i]['howmany']+','+txt[i]['howmuch']+'</option>';
+				$('#selRoom').append(str);
+			}
+		}
+		
+	});
+	$.ajax({url:"/train/roomtypelist",
+		data:{},
+		datatype:'json',
+		method:"GET",
+		success:function(txt){
+			console.log(txt);
+			for(i=0;i<txt.length;i++){
+				let ar='<option value='+txt[i]['typecode']+'>'+txt[i]['name']+'</option>';
+				$('#roomtype').append(ar);
+				console.log(ar);
+			}
+		}
+		
+	});
+})
 .on('click','#selRoom option',function(){
 	console.log($(this).val()+','+$(this).text());
 	$('#roomcode').val($(this).val());

@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 @Controller
 public class MyController {
 
@@ -35,23 +38,89 @@ public class MyController {
 		emp.deleteMenu(code);
 		return "redirect:/menuadd";
 		}
-	
-	@RequestMapping("/ad_room")
-	public String room(HttpServletRequest hsr,Model m) {
+	@ResponseBody
+	@RequestMapping(value="/roomlist",method=RequestMethod.GET,
+            produces="application/json;charset=utf-8")
+	public String roomlist() {
 		iEmp jc=sqlSession.getMapper(iEmp.class);
 		ArrayList<Room> Room=jc.getRoom();
-		m.addAttribute("Room",Room);
-		ArrayList<Roomtype> typelist=jc.getRoomType();
-		System.out.println("typesize : "+typelist.size());
-		m.addAttribute("roomtype",typelist);
-		return "addRoom";
+		JSONArray ja=new JSONArray();
+		for(int i=0;i<Room.size();i++) {
+			JSONObject jo=new JSONObject();
+			jo.put("roomcode", Room.get(i).getRoomcode());
+			jo.put("name", Room.get(i).getName());
+			jo.put("type", Room.get(i).getType());
+			jo.put("howmany", Room.get(i).getHowmany());
+			jo.put("howmuch", Room.get(i).getHowmuch());
+			ja.add(jo);
 		}
+		return ja.toString();
+		}
+	@ResponseBody
+	@RequestMapping(value="/roomtypelist",method=RequestMethod.GET,
+            produces="application/json;charset=utf-8")
+	public String roomtypelist(){
+	iEmp jc=sqlSession.getMapper(iEmp.class);
+	ArrayList<Roomtype> typelist=jc.getRoomType();
+	JSONArray ja=new JSONArray();
+	for(int i=0;i<typelist.size();i++) {
+		JSONObject jo=new JSONObject();
+		jo.put("name", typelist.get(i).getName());
+		jo.put("typecode", typelist.get(i).getTypecode());
+		ja.add(jo);
+	}
+	return ja.toString();
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/emplist",method=RequestMethod.GET,
+            produces="application/json;charset=utf-8")
+	public String emplist(HttpServletRequest hsr){
+		String keyword = hsr.getParameter("kw");
+	      if(keyword.equals("")) return "";
+	      
+	      iEmp jc = sqlSession.getMapper(iEmp.class);
+	      ArrayList<emplist> typelist = jc.getEmpList1(Integer.parseInt(keyword));
+		
+		//버튼눌렀을때 전부 표시
+//	iEmp jc=sqlSession.getMapper(iEmp.class);
+//	ArrayList<emplist> typelist=jc.emplist();
+//	
+	JSONArray ja=new JSONArray();
+	for(int i=0;i<typelist.size();i++) {
+		JSONObject jo=new JSONObject();
+		jo.put("id", typelist.get(i).getEmployee_id());
+		jo.put("name", typelist.get(i).getEmp_name());
+		jo.put("mobile", typelist.get(i).getPhone_number());
+		jo.put("manager", typelist.get(i).getManager_id());
+		jo.put("hire", typelist.get(i).getHire_date());
+		
+		ja.add(jo);
+	}
+	return ja.toString();
+	}
+	
+	@RequestMapping("/ad_room")public String adroom() {return "addRoom";}
 	@RequestMapping("/art")public String ART() {return "addRoomtype";}
-	@RequestMapping("/menuadd")public String doMenuadd(HttpServletRequest hsr,Model m) {
+	@RequestMapping("/admenu")public String addm() {return "addMenu";}
+	@RequestMapping("empl")public String empl() {return "emplist";}
+	@ResponseBody
+	@RequestMapping(value="/menulist",method=RequestMethod.GET,
+            produces="application/json;charset=utf-8")
+	public String doMenuadd(HttpServletRequest hsr,Model m) {
 		iEmp jc=sqlSession.getMapper(iEmp.class);
 		ArrayList<menu> menu=jc.getmenu();
-		m.addAttribute("menu",menu);
-		return "addMenu";
+		JSONArray ja=new JSONArray();
+		for(int i=0;i<menu.size();i++) {
+			JSONObject jo=new JSONObject();
+			jo.put("name", menu.get(i).getName());
+			jo.put("price", menu.get(i).getPrice());
+			jo.put("code", menu.get(i).getCode());
+			ja.add(jo);
+		}
+//		m.addAttribute("menu",menu);
+//		return "addMenu";
+		return ja.toString();
 		}
 	
 	@RequestMapping("/addRoomtype")

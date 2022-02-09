@@ -39,6 +39,22 @@
 <script src='https://code.jquery.com/jquery-3.5.0.js'></script>
 <script>
 $(document)
+.ready(function(){
+	$.ajax({url:"/train/menulist",
+		data:{},
+		datatype:'json',
+		method:"GET",
+		success:function(txt){
+			console.log(txt);
+			for(i=0;i<txt.length;i++){
+				let str='<option value='+txt[i]['code']+'>'+txt[i]['name']+', '+txt[i]['price']+'</option>';
+				$('#selMenu').append(str);
+				console.log(str);
+			}
+		}
+		
+	});
+})
 .on('submit','#frmAddMenu',function(){
 	if($('input [name=menu_name]').val()=='' ||
 		$('input [name=price]').val()==''){
@@ -62,5 +78,6 @@ $(document)
 	document.location=url;
 	return false;
 })
+
 </script>
 </html>

@@ -8,6 +8,12 @@
 	from employees
 	order by employee_id
 </select>
+<select id="getEmpList1" resultType="com.human.train.emplist">
+	select employee_id,emp_name,phone_number,manager_id,hire_date
+	from employees
+	where employee_id=#{param1}
+	order by employee_id
+</select>
 <select id="getCountries" resultType="com.human.train.countries">
 	select country_id,country_iso_code,country_name,country_region
 	from countries
