@@ -2,6 +2,7 @@ package com.human.train;
 
 import java.util.ArrayList;
 
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.ibatis.session.SqlSession;
@@ -21,6 +22,98 @@ public class MyController {
 	@Autowired
 	private SqlSession sqlSession;
 	
+	@RequestMapping("/ad_room")public String adroom() {return "addRoom";}
+	@RequestMapping("/art")public String ART() {return "addRoomtype";}
+	@RequestMapping("/admenu")public String addm() {return "addMenu";}
+	@RequestMapping("/empl")public String empl() {return "emplist";}
+	
+	@RequestMapping(value="/mana")
+	public String domanager(Model model) {
+		ijob job=sqlSession.getMapper(ijob.class);
+		ArrayList<manager> jl=job.getManager();
+		model.addAttribute("mem",jl);
+		return "manager";
+		}
+	
+	@ResponseBody
+	@RequestMapping(value="/memp",
+					produces="application/json;charset=utf-8")
+	public String domem(HttpServletRequest hsr) {
+		String jobid=hsr.getParameter("empcode");
+		int jobid1=Integer.parseInt(jobid);
+		ijob job=sqlSession.getMapper(ijob.class);
+		ArrayList<memp> ml=job.getmemp(jobid1);
+		
+		JSONArray ja=new JSONArray();
+		for(int i=0;i<ml.size();i++) {
+			JSONObject jo=new JSONObject();
+			jo.put("id", ml.get(i).getEmp_id());
+			jo.put("name", ml.get(i).getName());
+			jo.put("mobile", ml.get(i).getMobile());
+			ja.add(jo);
+		}
+		return ja.toString();
+	}
+	
+	@RequestMapping(value="/dept")
+	public String dodept(Model model) {
+		ijob job=sqlSession.getMapper(ijob.class);
+		ArrayList<deptinfo> jl=job.getdept();
+		System.out.println(jl.size());
+		model.addAttribute("depart",jl);
+		return "depart";
+		}
+	
+	@ResponseBody
+	@RequestMapping(value="/depart1",
+					produces="application/json;charset=utf-8")
+	public String dodepart(HttpServletRequest hsr) {
+		String jobid=hsr.getParameter("departcode");
+		int jobid1=Integer.parseInt(jobid);
+		ijob job=sqlSession.getMapper(ijob.class);
+		ArrayList<dept> ml=job.getdeList(jobid1);
+		
+		JSONArray ja=new JSONArray();
+		for(int i=0;i<ml.size();i++) {
+			JSONObject jo=new JSONObject();
+			jo.put("did", ml.get(i).getDid());
+			jo.put("dname", ml.get(i).getDname());
+			jo.put("mobile", ml.get(i).getMobile());
+			jo.put("salary", ml.get(i).getSalary());
+			ja.add(jo);
+		}
+		return ja.toString();
+	}
+	
+	@RequestMapping("/job")
+	public String dojob(Model model) {
+		ijob job=sqlSession.getMapper(ijob.class);
+		ArrayList<jobs> jl=job.jobList();
+		System.out.println("size ["+jl.size()+"]");
+		model.addAttribute("job",jl);
+		return "job";
+		}
+	
+	@ResponseBody
+	@RequestMapping(value="/position",
+					produces="application/json;charset=utf-8")
+	public String doPosition(HttpServletRequest hsr) {
+		String jobid=hsr.getParameter("jobcode");
+		ijob job=sqlSession.getMapper(ijob.class);
+		ArrayList<Empinfo> ml=job.getList(jobid);
+		
+		JSONArray ja=new JSONArray();
+		for(int i=0;i<ml.size();i++) {
+			JSONObject jo=new JSONObject();
+			jo.put("eid", ml.get(i).getEid());
+			jo.put("ename", ml.get(i).getEname());
+			jo.put("mobile", ml.get(i).getMobile());
+			jo.put("dname", ml.get(i).getDname());
+			ja.add(jo);
+		}
+		return ja.toString();
+	}
+	
 	@RequestMapping("/deleteRoom")
 	public String doDeleteRoom(HttpServletRequest hsr) {
 		int roomcode=Integer.parseInt(hsr.getParameter("roomcode"));
@@ -36,7 +129,7 @@ public class MyController {
 		
 		iEmp emp=sqlSession.getMapper(iEmp.class);
 		emp.deleteMenu(code);
-		return "redirect:/menuadd";
+		return "redirect:/admenu";
 		}
 	@ResponseBody
 	@RequestMapping(value="/roomlist",method=RequestMethod.GET,
@@ -82,7 +175,7 @@ public class MyController {
 	      iEmp jc = sqlSession.getMapper(iEmp.class);
 	      ArrayList<emplist> typelist = jc.getEmpList1(Integer.parseInt(keyword));
 		
-		//¹öÆ°´­·¶À»¶§ ÀüºÎ Ç¥½Ã
+		//ï¿½ï¿½Æ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
 //	iEmp jc=sqlSession.getMapper(iEmp.class);
 //	ArrayList<emplist> typelist=jc.emplist();
 //	
@@ -100,29 +193,8 @@ public class MyController {
 	return ja.toString();
 	}
 	
-	@RequestMapping("/ad_room")public String adroom() {return "addRoom";}
-	@RequestMapping("/art")public String ART() {return "addRoomtype";}
-	@RequestMapping("/admenu")public String addm() {return "addMenu";}
-	@RequestMapping("empl")public String empl() {return "emplist";}
-	@ResponseBody
-	@RequestMapping(value="/menulist",method=RequestMethod.GET,
-            produces="application/json;charset=utf-8")
-	public String doMenuadd(HttpServletRequest hsr,Model m) {
-		iEmp jc=sqlSession.getMapper(iEmp.class);
-		ArrayList<menu> menu=jc.getmenu();
-		JSONArray ja=new JSONArray();
-		for(int i=0;i<menu.size();i++) {
-			JSONObject jo=new JSONObject();
-			jo.put("name", menu.get(i).getName());
-			jo.put("price", menu.get(i).getPrice());
-			jo.put("code", menu.get(i).getCode());
-			ja.add(jo);
-		}
-//		m.addAttribute("menu",menu);
-//		return "addMenu";
-		return ja.toString();
-		}
-	
+
+
 	@RequestMapping("/addRoomtype")
 	public String addRoomtype(HttpServletRequest hsr) {
 		String name=hsr.getParameter("typename");
@@ -150,10 +222,28 @@ public class MyController {
 		return "redirect:/ad_room";
 	}
 	
+	@ResponseBody
+	@RequestMapping(value="/menulist",method=RequestMethod.GET,
+            produces="application/json;charset=utf-8")
+	public String doMenuadd(HttpServletRequest hsr,Model m) {
+		iEmp jc=sqlSession.getMapper(iEmp.class);
+		ArrayList<menu> menu=jc.getmenu();
+		JSONArray ja=new JSONArray();
+		for(int i=0;i<menu.size();i++) {
+			JSONObject jo=new JSONObject();
+			jo.put("name", menu.get(i).getName());
+			jo.put("price", menu.get(i).getPrice());
+			jo.put("code", menu.get(i).getCode());
+			ja.add(jo);
+		}
+//		m.addAttribute("menu",menu);
+//		return "addMenu";
+		return ja.toString();
+		}
 	
 	
-	@RequestMapping("/addmenu")
-	public String doAddMenu(HttpServletRequest hsr) {
+	@RequestMapping(value="/addmenu",produces="application/json;charset=utf-8")
+	public void doAddMenu(HttpServletRequest hsr) {
 		String strCode=hsr.getParameter("code");
 		String mname=hsr.getParameter("menu_name");
 		int price=Integer.parseInt(hsr.getParameter("price"));
@@ -165,7 +255,7 @@ public class MyController {
 			int code=Integer.parseInt(strCode);
 			emp.updateMenu(code, mname, price);
 		}
-		return "redirect:/menuadd";
+//		return "redirect:/menuadd";
 	}
 	
 	@RequestMapping("/jc")

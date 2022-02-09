@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.human.train.ijob">
+<select id="jobList" resultType="com.human.train.jobs">
+	select job_id,job_title from jobs order by job_title
+</select>
+<select id="getList" resultType="com.human.train.Empinfo">
+	select a.employee_id as eid, a.emp_name as ename,
+	a.phone_number as mobile, b.department_name as dname
+	from employees a, departments b
+	where a.job_id=#{param1} and a.department_id=b.department_id
+</select>
+<select id="getdept" resultType="com.human.train.deptinfo">
+	select department_id,department_name
+	from departments order by department_name
+</select>
+<select id="getdeList" resultType="com.human.train.dept">
+	select a.employee_id as did,a.emp_name as dname,
+	a.phone_number as mobile, a.salary as salary
+	from employees a, departments b
+	where b.department_id=#{param1} and a.department_id=b.department_id
+</select>
+<select id="getManager" resultType="com.human.train.manager">
+	select distinct a.emp_name as name,a.employee_id as emp_id 
+	from employees a,employees b
+	where a.employee_id=b.manager_id
+</select>
+<select id="getmemp" resultType="com.human.train.memp">
+	select b.employee_id as emp_id,b.emp_name as name,b.phone_number as mobile
+	from employees a, employees b
+	where b.manager_id=#{param1} and a.employee_id=b.manager_id
+</select>
+</mapper>
